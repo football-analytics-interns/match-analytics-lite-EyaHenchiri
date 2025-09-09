@@ -45,6 +45,74 @@
     <div class="skeleton" style="flex:1"></div>
     <div class="skeleton" style="flex:.8"></div>
   </div>
+<section class="card" style="margin-top:16px">
+  <h2>Ajouter un événement</h2>
+
+  <div class="controls" style="gap:12px; flex-wrap:wrap">
+    <label>Joueur
+      <select [value]="newEvent().playerId ?? ''"
+              (change)="setNE('playerId', +$any($event.target).value)">
+        <option value="" disabled>— choisir —</option>
+        <option *ngFor="let p of match()?.players || []" [value]="p.id">
+          {{ p.name }} ({{ p.team }})
+        </option>
+      </select>
+    </label>
+
+    <label>Type
+      <select [value]="newEvent().type"
+              (change)="setNE('type', $any($event.target).value)">
+        <option *ngFor="let t of evtTypes" [value]="t">{{ t }}</option>
+      </select>
+    </label>
+
+    <label>Minute
+      <input type="number" min="0" max="120"
+             [value]="newEvent().minute"
+             (input)="setNE('minute', $any($event.target).valueAsNumber)">
+    </label>
+
+    <!-- Assist pour GOAL -->
+    <label *ngIf="newEvent().type==='GOAL'">Assist (optionnel)
+      <select [value]="newEvent().assistId ?? ''"
+              (change)="setNE('assistId', $any($event.target).value ? +$any($event.target).value : null)">
+        <option value="">—</option>
+        <option *ngFor="let p of match()?.players || []" [value]="p.id">
+          {{ p.name }} ({{ p.team }})
+        </option>
+      </select>
+    </label>
+
+    <!-- Cible pour PASS -->
+    <label *ngIf="newEvent().type==='PASS'">Cible
+      <select [value]="newEvent().targetId ?? ''"
+              (change)="setNE('targetId', +$any($event.target).value)">
+        <option value="" disabled>— choisir —</option>
+        <option *ngFor="let p of match()?.players || []" [value]="p.id">
+          {{ p.name }} ({{ p.team }})
+        </option>
+      </select>
+    </label>
+
+    <!-- Coords pour GOAL/SHOT -->
+    <label *ngIf="newEvent().type==='GOAL' || newEvent().type==='SHOT'">X (0–100)
+      <input type="number" min="0" max="100"
+             [value]="newEvent().x ?? ''"
+             (input)="setNE('x', $any($event.target).valueAsNumber)">
+    </label>
+    <label *ngIf="newEvent().type==='GOAL' || newEvent().type==='SHOT'">Y (0–100)
+      <input type="number" min="0" max="100"
+             [value]="newEvent().y ?? ''"
+             (input)="setNE('y', $any($event.target).valueAsNumber)">
+    </label>
+
+    <button [disabled]="!canSubmitNE()" (click)="submitEvent()">Ajouter</button>
+    <button type="button" class="ghost" (click)="resetNE()">Réinitialiser</button>
+  </div>
+
+  <div *ngIf="postOk()" class="ok" style="margin-top:8px">Événement ajouté.</div>
+  <div *ngIf="postError()" class="err" style="margin-top:8px">{{ postError() }}</div>
+</section>
 
   <section class="grid" id="content" *ngIf="!loading()">
     <article class="card">
@@ -57,7 +125,7 @@
         <table>
           <thead>
           <tr>
-            <th>Team</th><th>Nom</th><th>Pos</th><th>G</th><th>A</th><th>Tkl</th><th>Impact</th><th>Rating</th><th>Trend</th>
+            <th>Team</th><th>Nom</th><th>Pos</th><th>G</th><th>A</th><th>Tkl</th><th>Impact</th><th>Rating</th>
           </tr>
           </thead>
           <tbody>
@@ -70,12 +138,11 @@
             <td>{{ p.tackles || 0 }}</td>
             <td>{{ p.impact ?? '—' }}</td>
             <td>{{ p.rating?.toFixed(1) }}</td>
-            <td><div [innerHTML]="sparklineOf(p)"></div></td>
           </tr>
           </tbody>
         </table>
       </div>
-      <p class="hint">Rating = 6.5 + 1.5×G + 0.8×A + 0.2×Tkl (capé à 10). Impact = 1ère minute d’influence. Trend = sparkline du rating cumulatif.</p>
+      <p class="hint">Rating = 6.5 + 1.5×G + 0.8×A + 0.2×Tkl (capé à 10). Impact = 1ère minute d’influence.</p>
     </article>
 
     <article class="card">

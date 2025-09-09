@@ -45,7 +45,3 @@ tr.row { cursor:pointer; }
 .dot.shot { background: var(--warn); }
 .edge { stroke:#70a1ff; stroke-opacity:.25; }
 .node { fill:#99aaff; stroke:#20305b; stroke-width:1; }
-
-.spark { width:90px; height:24px; display:inline-block; vertical-align:middle; }
-.spark path { stroke:#9cc1ff; stroke-width:2; fill:none; }
-.spark .grid { stroke:#2b3b66; stroke-width:1; opacity:.6; }
