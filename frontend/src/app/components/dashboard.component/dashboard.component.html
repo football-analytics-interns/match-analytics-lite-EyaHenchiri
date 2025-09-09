@@ -1,0 +1,137 @@
+<div class="wrap">
+  <header>
+    <div>
+      <h1>{{ match()?.homeTeam }} vs {{ match()?.awayTeam }}</h1>
+      <div class="meta">
+  {{ match()?.dateUtc | date:'EEE, dd MMM y HH:mm:ss':'UTC' }} UTC
+</div>
+
+      <div *ngIf="!error() && !loading()" class="ok">Données chargées.</div>
+      <div *ngIf="error()" class="err">{{ error() }}</div>
+    </div>
+
+    <div class="controls">
+      <label>Équipe:
+        <select [value]="team()" (change)="setTeam(($any($event.target).value))">
+          <option value="ALL">Toutes</option>
+          <option value="HOME">HOME</option>
+          <option value="AWAY">AWAY</option>
+        </select>
+      </label>
+
+      <label>Tri:
+        <select [value]="orderBy()" (change)="setOrder(($any($event.target).value))">
+          <option value="rating">Rating (desc)</option>
+          <option value="goals">Goals (desc)</option>
+          <option value="assists">Assists (desc)</option>
+          <option value="tackles">Tackles (desc)</option>
+          <option value="name">Nom (A→Z)</option>
+        </select>
+      </label>
+
+      <label>Filtre minutes: <span>0–{{ minuteMax() }}′</span>
+        <input type="range" min="0" max="120" step="5" [value]="minuteMax()" (input)="setMinute($any($event.target).valueAsNumber)">
+      </label>
+
+      <label>Recherche:
+        <input type="text" [value]="search()" (input)="setSearch(($any($event.target).value))" placeholder="Nom joueur..." />
+      </label>
+
+      <button (click)="load()" title="Relancer">Recharger</button>
+    </div>
+  </header>
+
+  <div class="loader" *ngIf="loading()">
+    <div class="skeleton" style="flex:1"></div>
+    <div class="skeleton" style="flex:.8"></div>
+  </div>
+
+  <section class="grid" id="content" *ngIf="!loading()">
+    <article class="card">
+      <div class="topline">
+        <h2>Joueurs (stats)</h2>
+        <span class="pill">{{ sorted().length }} joueurs</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+          <tr>
+            <th>Team</th><th>Nom</th><th>Pos</th><th>G</th><th>A</th><th>Tkl</th><th>Impact</th><th>Rating</th><th>Trend</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let p of sorted()" (click)="openPlayer(p)" class="row">
+            <td><span class="badge">{{ p.team }}</span></td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.position || '—' }}</td>
+            <td>{{ p.goals || 0 }}</td>
+            <td>{{ p.assists || 0 }}</td>
+            <td>{{ p.tackles || 0 }}</td>
+            <td>{{ p.impact ?? '—' }}</td>
+            <td>{{ p.rating?.toFixed(1) }}</td>
+            <td><div [innerHTML]="sparklineOf(p)"></div></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">Rating = 6.5 + 1.5×G + 0.8×A + 0.2×Tkl (capé à 10). Impact = 1ère minute d’influence. Trend = sparkline du rating cumulatif.</p>
+    </article>
+
+    <article class="card">
+      <h2>Goals & Assists par joueur</h2>
+      <div style="position:relative; height:290px"><canvas #gaCanvas aria-label="Goals & Assists chart"></canvas></div>
+      <p class="hint">Vue comparative — les créateurs (A) vs finisseurs (G). Le tri respecte le filtre minute.</p>
+    </article>
+  </section>
+
+  <section class="card" style="margin-top:16px" *ngIf="!loading()">
+    <h2>Pitch Map & Pass Network</h2>
+    <svg viewBox="0 0 100 100" class="pitch" role="img" aria-label="Terrain + réseau de passes">
+      <rect x="0" y="0" width="100" height="100" class="field" />
+      <line x1="50" y1="0" x2="50" y2="100" class="mid" />
+      <circle cx="50" cy="50" r="9" class="center" />
+
+      <g>
+        <line *ngFor="let e of pitch().edges"
+              [attr.x1]="e.x1" [attr.y1]="e.y1"
+              [attr.x2]="e.x2" [attr.y2]="e.y2"
+              class="edge" [attr.stroke-width]="e.w">
+          <title>{{ e.title }}</title>
+        </line>
+      </g>
+
+      <g>
+        <circle *ngFor="let ev of pitch().events"
+                [attr.cx]="ev.cx" [attr.cy]="ev.cy" r="2.6"
+                [ngClass]="'event ' + ev.cls">
+          <title>{{ ev.title }}</title>
+        </circle>
+      </g>
+
+      <g>
+        <g *ngFor="let n of pitch().nodes">
+          <circle class="node" [attr.cx]="n.x" [attr.cy]="n.y" r="3.2"></circle>
+          <text [attr.x]="n.x + 3.8" [attr.y]="n.y + 1.8" fill="#dbe6ff" font-size="3">{{ n.name }}</text>
+        </g>
+      </g>
+    </svg>
+
+    <div class="legend">
+      <span class="dot goal"></span> GOAL
+      <span class="dot shot"></span> SHOT
+      <span class="pill">Épaisseur = nombre de passes</span>
+    </div>
+  </section>
+
+  <footer></footer>
+
+  <app-player-modal
+    *ngIf="selected() as sel"
+    [open]="showModal()"
+    [player]="sel"
+    [events]="match()?.events || []"
+    [minuteMax]="minuteMax()"
+    (closed)="closeModal()">
+  </app-player-modal>
+</div>

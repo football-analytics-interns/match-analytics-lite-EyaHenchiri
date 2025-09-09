@@ -1,0 +1,23 @@
+{
+  "match": {
+    "id": 1,
+    "date": "2025-09-01T18:30:00Z",
+    "homeTeam": "Blue FC",
+    "awayTeam": "Red United",
+    "homeScore": 2,
+    "awayScore": 1
+  },
+  "players": [
+    { "id": 1, "name": "Ali", "team": "Blue FC", "position": "FWD" },
+    { "id": 2, "name": "Sami", "team": "Blue FC", "position": "MID" },
+    { "id": 3, "name": "Yassine", "team": "Blue FC", "position": "DEF" },
+    { "id": 11, "name": "Khaled", "team": "Red United", "position": "FWD" },
+    { "id": 12, "name": "Omar", "team": "Red United", "position": "GK" }
+  ],
+  "events": [
+    { "minute": 12, "type": "GOAL", "playerId": 1, "meta": {"assistId": 2} },
+    { "minute": 43, "type": "SHOT", "playerId": 1, "meta": {"onTarget": true} },
+    { "minute": 67, "type": "GOAL", "playerId": 11, "meta": {} },
+    { "minute": 75, "type": "TACKLE", "playerId": 3, "meta": {} }
+  ]
+}

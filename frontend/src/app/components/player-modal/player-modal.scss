@@ -1,0 +1,17 @@
+.overlay {
+  position: fixed; inset: 0; background: rgba(4,8,18,.7);
+  display: grid; place-items: center; z-index: 40;
+}
+.card { background:#0f1730; border:1px solid #243255; color:#eaf0ff; border-radius:14px; padding:16px; width:min(720px, 92vw); }
+header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+h3 { margin:0; font-size:20px; }
+.x { background:transparent; color:#eaf0ff; border:1px solid #243255; border-radius:10px; padding:2px 8px; cursor:pointer; }
+.meta { display:flex; gap:8px; color:#a7b1cc; margin-bottom:10px; }
+.badge { display:inline-block; font-size:12px; padding:2px 8px; border:1px solid #243255; border-radius:999px; background:#0d1735; }
+.pos { font-size:12px; padding:2px 8px; border:1px dashed #243255; border-radius:999px; }
+.grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+@media (max-width: 640px){ .grid{ grid-template-columns:1fr } }
+.box { border:1px solid #243255; border-radius:10px; padding:10px; background:#101b37; }
+.spark-wrap .grid { stroke:#2b3b66; opacity:.6; }  /* <svg> interne */
+.spark-wrap path { stroke:#9cc1ff; fill:none; stroke-width:2; }
+footer { margin-top:10px; color:#a7b1cc; font-size:12px; text-align:right; }

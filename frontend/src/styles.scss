@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #0a0f1e;
+  --card: #0f1730;
+  --text: #eaf0ff;
+  --muted: #a7b1cc;
+  --line: #243255;
+  --accent: #7aa2ff;
+  --ok: #7ae582;
+  --warn: #ffd166;
+  --bad: #ff8da1;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
+}

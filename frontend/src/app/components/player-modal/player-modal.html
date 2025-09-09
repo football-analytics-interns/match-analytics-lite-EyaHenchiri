@@ -1,0 +1,35 @@
+<div class="overlay" *ngIf="open" (click)="close()">
+  <div class="panel card" (click)="$event.stopPropagation()">
+    <header>
+      <h3>{{ player.name }}</h3>
+      <button class="x" (click)="close()" aria-label="Fermer">×</button>
+    </header>
+
+    <div class="meta">
+      <span class="badge">{{ player.team }}</span>
+      <span class="pos">{{ player.position || '—' }}</span>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h4>Résumé</h4>
+        <ul>
+          <li><strong>Goals:</strong> {{ player.goals || 0 }}</li>
+          <li><strong>Assists:</strong> {{ player.assists || 0 }}</li>
+          <li><strong>Tackles:</strong> {{ player.tackles || 0 }}</li>
+          <li><strong>Rating:</strong> {{ player.rating?.toFixed(1) || '—' }}</li>
+          <li><strong>Impact min:</strong> {{ player.impact ?? '—' }}′</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h4>Form (0–{{ minuteMax }}′)</h4>
+        <div class="chart-wrap">
+          <canvas #formCanvas aria-label="Player form line chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <footer>Cliquer en dehors pour fermer.</footer>
+  </div>
+</div>
